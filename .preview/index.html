@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Marnee App Preview</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ice: #f6f6f6;
+    --black: #1e1e1e;
+    --deep: #40086d;
+    --lilac: #dccaf4;
+    --lilac-soft: #ede0f8;
+    --night: #1a0530;
+    --muted: rgba(30,30,30,0.45);
+  }
+  body {
+    background: #e8e4ef;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 16px;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  /* Top nav */
+  .screen-nav {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .nav-btn {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1.5px solid var(--lilac);
+    background: white;
+    color: var(--black);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .nav-btn.active { background: var(--deep); color: white; border-color: var(--deep); }
+
+  /* Phone */
+  .phone {
+    width: 375px;
+    height: 812px;
+    background: var(--ice);
+    border-radius: 44px;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.22), inset 0 0 0 1.5px rgba(0,0,0,0.08);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .notch {
+    width: 120px; height: 30px;
+    background: #111;
+    border-radius: 0 0 20px 20px;
+    margin: 0 auto;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+
+  /* Screens */
+  .screens-wrapper {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+  .screens-track {
+    display: flex;
+    height: 100%;
+    transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+  .screen {
+    min-width: 375px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ── Bottom Tab Bar ── */
+  .tab-bar {
+    background: var(--night);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    transition: height 0.25s ease, padding 0.25s ease;
+    overflow: hidden;
+  }
+  .tab-bar.expanded { height: 72px; padding-bottom: 8px; }
+  .tab-bar.collapsed { height: 52px; padding-bottom: 4px; }
+
+  .tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 10px;
+    flex: 1;
+  }
+  .tab-icon {
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .tab-icon svg { width: 20px; height: 20px; fill: var(--lilac); opacity: 0.45; }
+  .tab-item.active .tab-icon svg { opacity: 1; fill: var(--lilac-soft); }
+  .tab-label {
+    font-size: 9px;
+    color: var(--lilac);
+    opacity: 0.45;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    transition: opacity 0.2s, max-height 0.25s;
+    max-height: 14px;
+    overflow: hidden;
+  }
+  .tab-item.active .tab-label { opacity: 1; color: var(--lilac-soft); }
+  .tab-bar.collapsed .tab-label { max-height: 0; opacity: 0; }
+
+  .tab-toggle {
+    width: 28px; height: 28px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-right: 8px;
+  }
+  .tab-toggle svg { width: 14px; height: 14px; fill: var(--lilac); opacity: 0.6; }
+
+  /* ── LOGIN ── */
+  #login {
+    background: var(--ice);
+    justify-content: center;
+    padding: 40px 32px;
+  }
+  .logo-row {
+    display: flex; align-items: center; justify-content: center;
+    gap: 10px; margin-bottom: 16px;
+  }
+  .logo-img { height: 32px; width: auto; }
+  .logo-wordmark { font-size: 24px; font-weight: 700; color: var(--black); letter-spacing: -0.5px; }
+  .divider-line { height: 1px; background: var(--lilac); margin-bottom: 28px; }
+  .heading { font-size: 22px; font-weight: 800; color: var(--black); text-align: center; margin-bottom: 6px; }
+  .subheading { font-size: 13px; color: var(--muted); text-align: center; margin-bottom: 32px; }
+  .form-label { font-size: 13px; font-weight: 600; color: var(--black); margin-bottom: 8px; margin-top: 16px; display: block; }
+  .form-input {
+    width: 100%; background: var(--lilac-soft); border: none; border-radius: 10px;
+    padding: 14px 16px; font-size: 15px; color: var(--black); outline: none; display: block; font-family: inherit;
+  }
+  .form-input::placeholder { color: var(--muted); }
+  .forgot-row { display: flex; justify-content: flex-end; margin-top: 10px; margin-bottom: 4px; }
+  .forgot-link { font-size: 13px; color: var(--deep); font-weight: 500; cursor: pointer; }
+  .btn-primary {
+    width: 100%; background: var(--lilac); border: none; border-radius: 10px;
+    padding: 16px; font-size: 16px; font-weight: 700; color: var(--black); margin-top: 16px; cursor: pointer;
+  }
+
+  /* ── ONBOARDING ── */
+  #onboarding {
+    background: var(--ice);
+    align-items: center;
+    padding: 36px 24px;
+    overflow-y: auto;
+  }
+  .badge {
+    background: var(--lilac-soft); border-radius: 20px; padding: 6px 16px;
+    font-size: 12px; font-weight: 600; color: var(--deep); margin-bottom: 24px;
+  }
+  .big-heading { font-size: 28px; font-weight: 800; color: var(--black); text-align: center; line-height: 1.25; margin-bottom: 14px; }
+  .big-heading span { color: var(--deep); }
+  .desc { font-size: 13px; color: var(--muted); text-align: center; line-height: 1.6; margin-bottom: 32px; }
+  .test-card {
+    width: 100%; background: white; border-radius: 16px; border: 1.5px solid var(--lilac);
+    padding: 20px; position: relative; margin-bottom: 28px;
+  }
+  .required-badge {
+    position: absolute; top: -13px; right: 16px; background: var(--deep); color: white;
+    font-size: 10px; font-weight: 700; padding: 4px 12px; border-radius: 20px; letter-spacing: 0.5px;
+  }
+  .card-header { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 14px; margin-top: 6px; }
+  .card-icon-wrap {
+    width: 44px; height: 44px; background: var(--lilac-soft); border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .card-icon-wrap svg { width: 22px; height: 22px; fill: var(--deep); }
+  .card-title { font-size: 18px; font-weight: 700; color: var(--black); margin-bottom: 4px; }
+  .card-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .card-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .meta-badge { background: var(--lilac-soft); border-radius: 20px; padding: 4px 12px; font-size: 11px; color: var(--deep); font-weight: 500; }
+  .meta-priority { font-size: 11px; color: var(--muted); }
+  .btn-dark {
+    width: 100%; background: var(--black); color: var(--ice); border: none; border-radius: 10px;
+    padding: 14px; font-size: 15px; font-weight: 700; cursor: pointer;
+  }
+  .progress-bar { width: 100%; height: 2px; background: var(--lilac); border-radius: 2px; margin-bottom: 6px; }
+  .progress-fill { height: 2px; background: var(--deep); border-radius: 2px; }
+  .progress-text { font-size: 11px; color: var(--muted); }
+
+  /* ── QUESTIONS ── */
+  #questions { flex-direction: row !important; }
+  .sidebar {
+    width: 140px; background: white; border-right: 1px solid var(--lilac);
+    padding: 14px 12px; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto;
+  }
+  .back-btn { font-size: 12px; color: var(--black); font-weight: 500; margin-bottom: 14px; cursor: pointer; }
+  .sidebar-title { font-size: 14px; font-weight: 700; color: var(--black); margin-bottom: 4px; }
+  .sidebar-sub { font-size: 10px; color: var(--muted); line-height: 1.4; margin-bottom: 14px; }
+  .section-label { font-size: 8px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .section-item { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 0.5px solid var(--lilac); }
+  .section-name { font-size: 10px; color: var(--black); }
+  .section-name.active { color: var(--deep); font-weight: 600; }
+  .section-count { font-size: 9px; color: var(--muted); }
+  .sidebar-footer { margin-top: auto; padding-top: 12px; border-top: 0.5px solid var(--lilac); }
+  .q-count { font-size: 10px; color: var(--muted); margin-bottom: 6px; }
+  .q-content { flex: 1; padding: 18px 16px; display: flex; flex-direction: column; overflow-y: auto; }
+  .q-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .section-badge { background: var(--lilac-soft); border-radius: 20px; padding: 5px 12px; font-size: 10px; color: var(--deep); font-weight: 500; }
+  .required-tag { font-size: 10px; color: #c0392b; font-weight: 500; }
+  .question-text { font-size: 17px; font-weight: 800; color: var(--black); line-height: 1.35; margin-bottom: 18px; }
+  .textarea {
+    flex: 1; background: white; border: 1px solid var(--lilac); border-radius: 10px;
+    padding: 14px; font-size: 13px; color: var(--black); resize: none; margin-bottom: 16px;
+    font-family: inherit; max-height: 110px; outline: none;
+  }
+  .textarea::placeholder { color: var(--muted); }
+  .nav-row { display: flex; gap: 10px; }
+  .btn-outline { flex: 1; background: transparent; border: 1px solid var(--lilac); border-radius: 10px; padding: 12px; font-size: 13px; font-weight: 500; color: var(--black); cursor: pointer; }
+  .btn-next { flex: 1; background: var(--black); border: none; border-radius: 10px; padding: 12px; font-size: 13px; font-weight: 700; color: var(--ice); cursor: pointer; }
+
+  /* ── CHAT ── */
+  #chat { background: var(--ice); }
+  .screen-header {
+    display: flex; align-items: center; gap: 12px; padding: 14px 20px;
+    background: white; border-bottom: 1px solid var(--lilac); flex-shrink: 0;
+  }
+  .screen-header-icon {
+    width: 38px; height: 38px; background: var(--lilac-soft); border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .screen-header-icon svg { width: 20px; height: 20px; fill: var(--deep); }
+  .screen-title { font-size: 16px; font-weight: 700; color: var(--black); }
+  .screen-sub { font-size: 11px; color: var(--muted); }
+  .messages { flex: 1; padding: 18px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
+  .bubble { max-width: 78%; border-radius: 16px; padding: 12px 16px; font-size: 13px; line-height: 1.5; }
+  .bubble.ai { background: white; border: 1px solid var(--lilac); align-self: flex-start; color: var(--black); }
+  .bubble.user { background: var(--deep); color: white; align-self: flex-end; }
+  .chat-input-row {
+    display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+    background: white; border-top: 1px solid var(--lilac); flex-shrink: 0;
+  }
+  .chat-input {
+    flex: 1; background: var(--lilac-soft); border: none; border-radius: 20px;
+    padding: 10px 16px; font-size: 13px; color: var(--black); outline: none; font-family: inherit;
+  }
+  .send-btn {
+    width: 38px; height: 38px; background: var(--deep); border: none; border-radius: 50%;
+    color: white; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── CALENDAR ── */
+  #calendar { background: var(--ice); }
+  .cal-header {
+    display: flex; justify-content: space-between; align-items: center; padding: 14px 20px;
+    background: white; border-bottom: 1px solid var(--lilac); flex-shrink: 0;
+  }
+  .cal-title { font-size: 18px; font-weight: 800; color: var(--black); }
+  .cal-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .regen-btn { background: var(--lilac-soft); border: none; border-radius: 20px; padding: 8px 14px; font-size: 12px; font-weight: 600; color: var(--deep); cursor: pointer; }
+  .day-header-row { display: grid; grid-template-columns: repeat(7,1fr); padding: 8px 4px; background: white; flex-shrink: 0; }
+  .day-lbl { text-align: center; font-size: 10px; color: var(--muted); font-weight: 500; }
+  .cal-grid { flex: 1; overflow-y: auto; }
+  .week-row { display: grid; grid-template-columns: repeat(7,1fr); border-top: 0.5px solid var(--lilac); min-height: 72px; }
+  .day-cell { border-right: 0.5px solid var(--lilac); padding: 4px; }
+  .day-num { font-size: 10px; color: var(--muted); margin-bottom: 3px; }
+  .post-chip { border-radius: 5px; padding: 4px 5px; margin-top: 2px; }
+  .post-chip-title { font-size: 8px; font-weight: 500; color: var(--black); line-height: 1.2; }
+  .post-chip-meta { display: flex; justify-content: space-between; margin-top: 2px; }
+  .post-chip-type { font-size: 7px; color: var(--muted); }
+  .post-chip-pri { font-size: 7px; font-weight: 700; color: var(--muted); }
+
+  /* ── BRAINSTORMING ── */
+  #brainstorming { background: var(--ice); }
+  .brain-header { padding: 14px 20px; background: white; border-bottom: 1px solid var(--lilac); flex-shrink: 0; }
+  .brain-title { font-size: 19px; font-weight: 800; color: var(--black); }
+  .brain-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .add-section { background: white; padding: 14px 16px; border-bottom: 1px solid var(--lilac); display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; }
+  .add-row { display: flex; gap: 8px; align-items: center; }
+  .idea-input { flex: 1; background: var(--lilac-soft); border: none; border-radius: 10px; padding: 11px 14px; font-size: 13px; color: var(--black); outline: none; font-family: inherit; }
+  .cat-pill { display: flex; align-items: center; gap: 5px; background: var(--ice); border: 1px solid var(--lilac); border-radius: 20px; padding: 7px 12px; cursor: pointer; white-space: nowrap; }
+  .cat-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .cat-pill-text { font-size: 11px; font-weight: 600; color: var(--black); }
+  .filter-row { display: flex; gap: 6px; padding: 10px 16px; overflow-x: auto; border-bottom: 1px solid var(--lilac); background: white; flex-shrink: 0; }
+  .filter-chip { padding: 5px 12px; border-radius: 20px; border: 1px solid var(--lilac); background: white; font-size: 11px; font-weight: 500; color: var(--muted); white-space: nowrap; cursor: pointer; }
+  .filter-chip.active { background: var(--deep); border-color: var(--deep); color: white; font-weight: 700; }
+  .ideas-list { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .idea-card { background: white; border-radius: 10px; border: 1px solid var(--lilac); padding: 12px 14px; display: flex; align-items: center; gap: 10px; }
+  .idea-cat-tag { border-radius: 5px; padding: 3px 8px; font-size: 9px; font-weight: 700; color: var(--black); white-space: nowrap; }
+  .idea-text { flex: 1; font-size: 13px; color: var(--black); }
+  .idea-del { font-size: 11px; color: var(--muted); cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div class="screen-nav">
+  <button class="nav-btn active" onclick="goToScreen(0,this)">Login</button>
+  <button class="nav-btn" onclick="goToScreen(1,this)">Onboarding</button>
+  <button class="nav-btn" onclick="goToScreen(2,this)">Questions</button>
+  <button class="nav-btn" onclick="goToScreen(3,this)">Ask Marnee</button>
+  <button class="nav-btn" onclick="goToScreen(4,this)">Calendar</button>
+  <button class="nav-btn" onclick="goToScreen(5,this)">Brainstorming</button>
+</div>
+
+<div class="phone">
+  <div class="notch"></div>
+
+  <div class="screens-wrapper" id="swipeArea">
+    <div class="screens-track" id="track">
+
+      <!-- 0: LOGIN -->
+      <div class="screen" id="login">
+        <div style="display:flex;flex-direction:column;justify-content:center;flex:1;padding:40px 32px;">
+          <div class="logo-row">
+            <img class="logo-img" src="logo.png" alt="Marnee" onerror="this.style.display='none'" />
+            <span class="logo-wordmark">Marnee</span>
+          </div>
+          <div class="divider-line"></div>
+          <p class="heading">Welcome back</p>
+          <p class="subheading">Enter your credentials to continue</p>
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" placeholder="your@email.com" />
+          <label class="form-label">Password</label>
+          <input class="form-input" type="password" placeholder="••••••••" />
+          <div class="forgot-row"><span class="forgot-link">Forgot password?</span></div>
+          <button class="btn-primary" onclick="goToScreen(1, document.querySelectorAll('.nav-btn')[1])">Log in</button>
+        </div>
+      </div>
+
+      <!-- 1: ONBOARDING -->
+      <div class="screen" id="onboarding">
+        <div style="display:flex;flex-direction:column;align-items:center;flex:1;padding:36px 24px;overflow-y:auto;">
+          <div class="badge">Let's get to know yourself</div>
+          <p class="big-heading">Build Your<br><span>Personal Brand</span></p>
+          <p class="desc">Our AI analyzes your business and personal brand to design a personalized marketing strategy that drives real results.</p>
+          <div class="test-card">
+            <div class="required-badge">REQUIRED</div>
+            <div class="card-header">
+              <div class="card-icon-wrap">
+                <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+              </div>
+              <div>
+                <p class="card-title">Brand Test</p>
+                <p class="card-desc">Covers your business model, target audience, positioning, and growth priorities.</p>
+              </div>
+            </div>
+            <div class="card-meta">
+              <span class="meta-badge">Mandatory</span>
+              <span class="meta-priority">Priority 1</span>
+            </div>
+            <button class="btn-dark" onclick="goToScreen(2, document.querySelectorAll('.nav-btn')[2])">Start Test</button>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+          <span class="progress-text">0%</span>
+        </div>
+      </div>
+
+      <!-- 2: QUESTIONS -->
+      <div class="screen" id="questions" style="flex-direction:row;">
+        <div class="sidebar">
+          <div class="back-btn" onclick="goToScreen(1, document.querySelectorAll('.nav-btn')[1])">← Back</div>
+          <p class="sidebar-title">Brand Test</p>
+          <p class="sidebar-sub">Complete all sections to unlock your personalized marketing campaign.</p>
+          <p class="section-label">Sections</p>
+          <div class="section-item"><span class="section-name active">Business Context</span><span class="section-count">0/3</span></div>
+          <div class="section-item"><span class="section-name">Business Model</span><span class="section-count">0/4</span></div>
+          <div class="section-item"><span class="section-name">Core Offer</span><span class="section-count">0/3</span></div>
+          <div class="section-item"><span class="section-name">Ideal Customer</span><span class="section-count">0/3</span></div>
+          <div class="section-item"><span class="section-name">Positioning</span><span class="section-count">0/4</span></div>
+          <div class="section-item"><span class="section-name">Branding</span><span class="section-count">0/1</span></div>
+          <div class="section-item"><span class="section-name">Channels</span><span class="section-count">0/1</span></div>
+          <div class="section-item"><span class="section-name">Content</span><span class="section-count">0/3</span></div>
+          <div class="section-item"><span class="section-name">Growth</span><span class="section-count">0/3</span></div>
+          <div class="sidebar-footer">
+            <p class="q-count">Question 1 of 25</p>
+            <div class="progress-bar"><div class="progress-fill" style="width:4%"></div></div>
+            <span class="progress-text">4%</span>
+          </div>
+        </div>
+        <div class="q-content">
+          <div class="q-meta">
+            <span class="section-badge">Business Context · Q1</span>
+            <span class="required-tag">* Required</span>
+          </div>
+          <p class="question-text">In one sentence, how would you describe your business?</p>
+          <textarea class="textarea" placeholder="e.g., We help SaaS companies scale their content marketing..."></textarea>
+          <div class="nav-row">
+            <button class="btn-outline" onclick="goToScreen(1, document.querySelectorAll('.nav-btn')[1])">Back</button>
+            <button class="btn-next" onclick="goToScreen(3, document.querySelectorAll('.nav-btn')[3])">Next</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3: ASK MARNEE -->
+      <div class="screen" id="chat">
+        <div class="screen-header">
+          <div class="screen-header-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+          </div>
+          <div>
+            <p class="screen-title">Ask Marnee</p>
+            <p class="screen-sub">AI Content Strategist</p>
+          </div>
+        </div>
+        <div class="messages">
+          <div class="bubble ai">Hi! I'm Marnee, your AI content strategist. What would you like to work on today?</div>
+          <div class="bubble user">I want to create content for this week</div>
+          <div class="bubble ai">Based on your brand profile, I suggest starting with an educational carousel. Want me to draft the hook?</div>
+        </div>
+        <div class="chat-input-row">
+          <input class="chat-input" placeholder="Ask Marnee anything..." />
+          <button class="send-btn">↑</button>
+        </div>
+        <div class="tab-bar expanded" id="tabBar">
+          <div class="tab-item" onclick="goToScreen(6,null)" title="Branding Test">
+            <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg></div>
+            <span class="tab-label">Branding Test</span>
+          </div>
+          <div class="tab-item active" onclick="goToScreen(3, document.querySelectorAll('.nav-btn')[3])">
+            <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></div>
+            <span class="tab-label">Ask Marnee</span>
+          </div>
+          <div class="tab-item" onclick="goToScreen(4, document.querySelectorAll('.nav-btn')[4])">
+            <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg></div>
+            <span class="tab-label">Calendar</span>
+          </div>
+          <div class="tab-item" onclick="goToScreen(5, document.querySelectorAll('.nav-btn')[5])">
+            <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></div>
+            <span class="tab-label">Brainstorming</span>
+          </div>
+          <div class="tab-toggle" id="toggleBtn" onclick="toggleMenu()" title="Collapse menu">
+            <svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4: CALENDAR -->
+      <div class="screen" id="calendar">
+        <div class="cal-header">
+          <div><p class="cal-title">Content Calendar</p><p class="cal-sub">12 posts · Apr 27 – May 25</p></div>
+          <button class="regen-btn">Regenerate</button>
+        </div>
+        <div class="day-header-row">
+          <span class="day-lbl">Sun</span><span class="day-lbl">Mon</span><span class="day-lbl">Tue</span>
+          <span class="day-lbl">Wed</span><span class="day-lbl">Thu</span><span class="day-lbl">Fri</span><span class="day-lbl">Sat</span>
+        </div>
+        <div class="cal-grid">
+          <div class="week-row">
+            <div class="day-cell"></div><div class="day-cell"></div><div class="day-cell"></div>
+            <div class="day-cell"></div><div class="day-cell"><span class="day-num">1</span></div>
+            <div class="day-cell"><span class="day-num">2</span></div><div class="day-cell"><span class="day-num">3</span></div>
+          </div>
+          <div class="week-row">
+            <div class="day-cell"><span class="day-num">4</span><div class="post-chip" style="background:#FFD6D6"><p class="post-chip-title">The Psychology of Brand...</p><div class="post-chip-meta"><span class="post-chip-type">Viral</span><span class="post-chip-pri">M</span></div></div></div>
+            <div class="day-cell"><span class="day-num">5</span></div>
+            <div class="day-cell"><span class="day-num">6</span><div class="post-chip" style="background:#D6E8FF"><p class="post-chip-title">Navigating Your Startup...</p><div class="post-chip-meta"><span class="post-chip-type">Educational</span><span class="post-chip-pri">H</span></div></div></div>
+            <div class="day-cell"><span class="day-num">7</span></div>
+            <div class="day-cell"><span class="day-num">8</span><div class="post-chip" style="background:#FFD6D6"><p class="post-chip-title">Building Resilience...</p><div class="post-chip-meta"><span class="post-chip-type">Viral</span><span class="post-chip-pri">M</span></div></div></div>
+            <div class="day-cell"><span class="day-num">9</span></div>
+            <div class="day-cell"><span class="day-num">10</span></div>
+          </div>
+          <div class="week-row">
+            <div class="day-cell"><span class="day-num">11</span><div class="post-chip" style="background:#D6E8FF"><p class="post-chip-title">From Idea to Impact...</p><div class="post-chip-meta"><span class="post-chip-type">Educational</span><span class="post-chip-pri">H</span></div></div></div>
+            <div class="day-cell"><span class="day-num">12</span></div>
+            <div class="day-cell"><span class="day-num">13</span><div class="post-chip" style="background:#D6E8FF"><p class="post-chip-title">Art of Authentic M...</p><div class="post-chip-meta"><span class="post-chip-type">Educational</span><span class="post-chip-pri">L</span></div></div></div>
+            <div class="day-cell"><span class="day-num">14</span></div>
+            <div class="day-cell"><span class="day-num">15</span><div class="post-chip" style="background:#FFF3D6"><p class="post-chip-title">Maximize Your Brand's...</p><div class="post-chip-meta"><span class="post-chip-type">Authority</span><span class="post-chip-pri">M</span></div></div></div>
+            <div class="day-cell"><span class="day-num">16</span></div>
+            <div class="day-cell"><span class="day-num">17</span></div>
+          </div>
+        </div>
+        <div class="tab-bar expanded" id="tabBar4">
+          <div class="tab-item" onclick="goToScreen(6,null)">
+            <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg></div>
+            <span class="tab-label">Branding Test</span>
+          </div>
+          <div class="tab-item" onclick="goToScreen(3, document.querySelectorAll('.nav-btn')[3])">
+            <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></div>
+            <span class="tab-label">Ask Marnee</span>
+          </div>
+          <div class="tab-item active" onclick="goToScreen(4, document.querySelectorAll('.nav-btn')[4])">
+            <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg></div>
+            <span class="tab-label">Calendar</span>
+          </div>
+          <div class="tab-item" onclick="goToScreen(5, document.querySelectorAll('.nav-btn')[5])">
+            <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></div>
+            <span class="tab-label">Brainstorming</span>
+          </div>
+          <div class="tab-toggle" onclick="toggleMenu4()">
+            <svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5: BRAINSTORMING -->
+      <div class="screen" id="brainstorming">
+        <div class="brain-header">
+          <p class="brain-title">Brainstorming</p>
+          <p class="brain-sub">3 ideas in your backlog</p>
+        </div>
+        <div class="add-section">
+          <div class="add-row">
+            <input class="idea-input" placeholder="New idea..." />
+            <div class="cat-pill">
+              <div class="cat-dot" style="background:#FFD6D6"></div>
+              <span class="cat-pill-text">Viral</span>
+              <span style="font-size:9px;color:var(--muted)">▾</span>
+            </div>
+          </div>
+          <button class="btn-dark">Add idea</button>
+        </div>
+        <div class="filter-row">
+          <div class="filter-chip active">All</div>
+          <div class="filter-chip">Viral</div>
+          <div class="filter-chip">Educational</div>
+          <div class="filter-chip">Authority</div>
+          <div class="filter-chip">Personal</div>
+          <div class="filter-chip">Promo</div>
+        </div>
+        <div class="ideas-list">
+          <div class="idea-card"><span class="idea-cat-tag" style="background:#FFD6D6">Viral</span><span class="idea-text">Trending audio hook for Q2</span><span class="idea-del">✕</span></div>
+          <div class="idea-card"><span class="idea-cat-tag" style="background:#F0D6FF">Collab</span><span class="idea-text">Collab idea with Korean beauty brand</span><span class="idea-del">✕</span></div>
+          <div class="idea-card"><span class="idea-cat-tag" style="background:#D6E8FF">Educational</span><span class="idea-text">5 myths about personal branding — carousel</span><span class="idea-del">✕</span></div>
+        </div>
+        <div class="tab-bar expanded" id="tabBar5">
+          <div class="tab-item" onclick="goToScreen(6,null)">
+            <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg></div>
+            <span class="tab-label">Branding Test</span>
+          </div>
+          <div class="tab-item" onclick="goToScreen(3, document.querySelectorAll('.nav-btn')[3])">
+            <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></div>
+            <span class="tab-label">Ask Marnee</span>
+          </div>
+          <div class="tab-item" onclick="goToScreen(4, document.querySelectorAll('.nav-btn')[4])">
+            <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg></div>
+            <span class="tab-label">Calendar</span>
+          </div>
+          <div class="tab-item active" onclick="goToScreen(5, document.querySelectorAll('.nav-btn')[5])">
+            <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></div>
+            <span class="tab-label">Brainstorming</span>
+          </div>
+          <div class="tab-toggle" onclick="toggleMenu5()">
+            <svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end track -->
+  </div><!-- end wrapper -->
+</div><!-- end phone -->
+
+<script>
+  // Main screens order: Login(0), Onboarding(1), Questions(2), Chat(3), Calendar(4), Brainstorming(5)
+  // Index 6 = go to questions (branding test from menu)
+  const SWIPEABLE = [3, 4, 5]; // screens with tab bar that can swipe
+  let current = 0;
+  const track = document.getElementById('track');
+  const navBtns = document.querySelectorAll('.nav-btn');
+
+  function goToScreen(idx, btn) {
+    if (idx === 6) { goToScreen(2, document.querySelectorAll('.nav-btn')[2]); return; }
+    current = idx;
+    track.style.transform = `translateX(-${idx * 375}px)`;
+    navBtns.forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+  }
+
+  // Swipe support
+  let startX = 0;
+  const area = document.getElementById('swipeArea');
+  area.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive:true});
+  area.addEventListener('touchend', e => {
+    const diff = startX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) < 50) return;
+    if (!SWIPEABLE.includes(current)) return;
+    if (diff > 0 && current < 5) goToScreen(current + 1, navBtns[current + 1]);
+    else if (diff < 0 && current > 3) goToScreen(current - 1, navBtns[current - 1]);
+  }, {passive:true});
+
+  // Mouse swipe for desktop preview
+  area.addEventListener('mousedown', e => { startX = e.clientX; });
+  area.addEventListener('mouseup', e => {
+    const diff = startX - e.clientX;
+    if (Math.abs(diff) < 50) return;
+    if (!SWIPEABLE.includes(current)) return;
+    if (diff > 0 && current < 5) goToScreen(current + 1, navBtns[current + 1]);
+    else if (diff < 0 && current > 3) goToScreen(current - 1, navBtns[current - 1]);
+  });
+
+  // Toggle menu
+  let menuExpanded = true;
+  function toggleAll(expanded) {
+    menuExpanded = expanded;
+    ['tabBar','tabBar4','tabBar5'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.toggle('expanded', expanded);
+      el.classList.toggle('collapsed', !expanded);
+    });
+    ['toggleBtn'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.querySelector('svg path').setAttribute('d', expanded
+        ? 'M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z'
+        : 'M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z');
+    });
+  }
+  function toggleMenu() { toggleAll(!menuExpanded); }
+  function toggleMenu4() { toggleAll(!menuExpanded); }
+  function toggleMenu5() { toggleAll(!menuExpanded); }
+</script>
+</body>
+</html>
