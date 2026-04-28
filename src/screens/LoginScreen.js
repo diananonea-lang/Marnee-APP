@@ -7,47 +7,52 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import { colors } from '../theme/colors';
+import LogoIcon from '../components/LogoIcon';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [remember, setRemember] = useState(false);
 
   return (
     <SafeAreaView style={styles.safe}>
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >
-        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-          {/* Logo */}
-          <View style={styles.logoRow}>
-            <Text style={styles.logoEmoji}>🐻</Text>
-            <Text style={styles.logoText}>Marnee</Text>
-          </View>
+      <StatusBar barStyle="dark-content" backgroundColor={colors.iceWhite} />
+      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
 
-          <View style={styles.divider} />
+          {/* Card */}
+          <View style={styles.card}>
+            {/* Logo */}
+            <View style={styles.logoBlock}>
+              <View style={styles.logoRow}>
+                <LogoIcon size={44} />
+                <Text style={styles.logoText}>Marnee</Text>
+              </View>
+              <View style={styles.dividerLine} />
+            </View>
 
-          {/* Heading */}
-          <Text style={styles.heading}>Welcome back</Text>
-          <Text style={styles.subheading}>Enter your credentials to continue</Text>
+            {/* Title */}
+            <Text style={styles.heading}>Welcome back</Text>
+            <Text style={styles.subheading}>Sign in to continue to Marnee.</Text>
 
-          {/* Form */}
-          <View style={styles.form}>
+            {/* Email */}
             <Text style={styles.label}>Email</Text>
             <TextInput
               style={styles.input}
               value={email}
               onChangeText={setEmail}
-              placeholder="your@email.com"
+              placeholder="you@email.com"
               placeholderTextColor={colors.textMuted}
               keyboardType="email-address"
               autoCapitalize="none"
             />
 
+            {/* Password */}
             <Text style={styles.label}>Password</Text>
             <TextInput
               style={styles.input}
@@ -58,17 +63,47 @@ export default function LoginScreen({ navigation }) {
               secureTextEntry
             />
 
-            <TouchableOpacity style={styles.forgotWrap}>
-              <Text style={styles.forgotText}>Forgot password?</Text>
-            </TouchableOpacity>
+            {/* Remember + Forgot */}
+            <View style={styles.rememberRow}>
+              <TouchableOpacity style={styles.checkRow} onPress={() => setRemember(!remember)}>
+                <View style={[styles.checkbox, remember && styles.checkboxOn]}>
+                  {remember && <Text style={styles.checkmark}>✓</Text>}
+                </View>
+                <Text style={styles.rememberText}>Remember me</Text>
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <Text style={styles.forgotText}>Forgot password?</Text>
+              </TouchableOpacity>
+            </View>
 
+            {/* Log in */}
             <TouchableOpacity
-              style={styles.button}
+              style={styles.btnPrimary}
               onPress={() => navigation.navigate('Onboarding')}
             >
-              <Text style={styles.buttonText}>Log in</Text>
+              <Text style={styles.btnPrimaryText}>Log in</Text>
             </TouchableOpacity>
+
+            {/* OR divider */}
+            <View style={styles.orRow}>
+              <View style={styles.orLine} />
+              <Text style={styles.orText}>or</Text>
+              <View style={styles.orLine} />
+            </View>
+
+            {/* Google */}
+            <TouchableOpacity style={styles.btnGoogle}>
+              <Text style={styles.googleG}>G</Text>
+              <Text style={styles.btnGoogleText}>Google</Text>
+            </TouchableOpacity>
+
+            {/* Sign up */}
+            <Text style={styles.switchText}>
+              Don't have an account?{' '}
+              <Text style={styles.switchLink}>Sign up</Text>
+            </Text>
           </View>
+
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -76,91 +111,87 @@ export default function LoginScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: colors.iceWhite,
-  },
-  flex: {
-    flex: 1,
-  },
-  container: {
+  safe: { flex: 1, backgroundColor: colors.iceWhite },
+  flex: { flex: 1 },
+  scroll: {
     flexGrow: 1,
     justifyContent: 'center',
-    paddingHorizontal: 32,
-    paddingVertical: 48,
+    paddingHorizontal: 20,
+    paddingVertical: 32,
   },
-  logoRow: {
+  card: {
+    backgroundColor: colors.white,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(30,30,30,0.1)',
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  logoBlock: { alignItems: 'center', marginBottom: 20 },
+  logoRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 },
+  logoText: { fontSize: 26, fontWeight: '300', color: colors.black, letterSpacing: -0.5 },
+  dividerLine: { height: 1, width: 64, backgroundColor: 'rgba(64,8,109,0.2)' },
+  heading: { fontSize: 20, fontWeight: '600', color: '#111827', textAlign: 'center', marginBottom: 4 },
+  subheading: { fontSize: 12, color: '#6b7280', textAlign: 'center', marginBottom: 20 },
+  label: { fontSize: 12, fontWeight: '500', color: '#374151', marginBottom: 6, marginTop: 14 },
+  input: {
+    backgroundColor: colors.iceWhite,
+    borderWidth: 1,
+    borderColor: 'rgba(30,30,30,0.1)',
+    borderRadius: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+    fontSize: 14,
+    color: colors.black,
+  },
+  rememberRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    marginBottom: 16,
-  },
-  logoEmoji: {
-    fontSize: 28,
-  },
-  logoText: {
-    fontSize: 28,
-    color: colors.black,
-    fontWeight: '600',
-    letterSpacing: -0.5,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: colors.lilac,
-    marginBottom: 28,
-  },
-  heading: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: colors.black,
-    textAlign: 'center',
-    marginBottom: 6,
-  },
-  subheading: {
-    fontSize: 14,
-    color: colors.textMuted,
-    textAlign: 'center',
-    marginBottom: 32,
-  },
-  form: {
-    gap: 4,
-  },
-  label: {
-    fontSize: 13,
-    color: colors.black,
-    fontWeight: '500',
-    marginBottom: 6,
+    justifyContent: 'space-between',
     marginTop: 12,
   },
-  input: {
-    backgroundColor: colors.lilacSoft,
-    borderRadius: 10,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontSize: 15,
-    color: colors.black,
+  checkRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  checkbox: {
+    width: 16,
+    height: 16,
+    borderWidth: 1.5,
+    borderColor: 'rgba(30,30,30,0.3)',
+    borderRadius: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  forgotWrap: {
-    alignSelf: 'flex-end',
-    marginTop: 10,
-    marginBottom: 4,
-  },
-  forgotText: {
-    fontSize: 13,
-    color: colors.deepPurple,
-    fontWeight: '500',
-  },
-  button: {
-    backgroundColor: colors.lilac,
-    borderRadius: 10,
-    paddingVertical: 16,
+  checkboxOn: { backgroundColor: colors.deepPurple, borderColor: colors.deepPurple },
+  checkmark: { color: '#fff', fontSize: 10, fontWeight: '700' },
+  rememberText: { fontSize: 12, color: '#6b7280' },
+  forgotText: { fontSize: 12, color: colors.deepPurple, fontWeight: '500' },
+  btnPrimary: {
+    backgroundColor: colors.black,
+    borderRadius: 6,
+    paddingVertical: 13,
     alignItems: 'center',
     marginTop: 16,
   },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: colors.black,
+  btnPrimaryText: { color: colors.white, fontSize: 14, fontWeight: '500' },
+  orRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginVertical: 14 },
+  orLine: { flex: 1, height: 1, backgroundColor: 'rgba(30,30,30,0.1)' },
+  orText: { fontSize: 11, color: '#9ca3af' },
+  btnGoogle: {
+    borderWidth: 1,
+    borderColor: 'rgba(30,30,30,0.1)',
+    borderRadius: 6,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    backgroundColor: colors.white,
   },
+  googleG: { fontSize: 16, fontWeight: '700', color: '#4285F4' },
+  btnGoogleText: { fontSize: 13, fontWeight: '500', color: '#374151' },
+  switchText: { textAlign: 'center', fontSize: 12, color: '#6b7280', marginTop: 16 },
+  switchLink: { color: colors.deepPurple, fontWeight: '500' },
 });
