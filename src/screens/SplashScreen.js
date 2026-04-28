@@ -2,23 +2,22 @@ import { View, Text, Image, TouchableOpacity, StyleSheet, StatusBar } from 'reac
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '../theme/colors';
 import LogoIcon from '../components/LogoIcon';
+import DotBackground from '../components/DotBackground';
 
 const PILLS = ['Social Strategy', 'Content Intelligence', 'Brand Voice', 'Audience Insights'];
 
 export default function SplashScreen({ navigation }) {
   return (
+    <DotBackground>
     <SafeAreaView style={styles.safe}>
       <StatusBar barStyle="dark-content" backgroundColor={colors.iceWhite} />
 
       {/* Header */}
       <View style={styles.header}>
-        <View style={styles.logoRow}>
-          <LogoIcon size={28} />
-          <Text style={styles.logoText}>
-            <Text style={styles.logoBold}>Marnee</Text>
-            <Text style={styles.logoLight}> Lite</Text>
-          </Text>
-        </View>
+        <Text style={styles.logoText}>
+          <Text style={styles.logoBold}>Marnee</Text>
+          <Text style={styles.logoLight}> Lite</Text>
+        </Text>
         <TouchableOpacity style={styles.langBtn}>
           <Text style={styles.langText}>ES</Text>
         </TouchableOpacity>
@@ -47,13 +46,14 @@ export default function SplashScreen({ navigation }) {
       {/* Footer */}
       <Text style={styles.copyright}>© 2026 Marnee Lite</Text>
     </SafeAreaView>
+    </DotBackground>
   );
 }
 
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: colors.iceWhite,
+    backgroundColor: 'transparent',
     justifyContent: 'space-between',
     paddingHorizontal: 24,
     paddingTop: 12,

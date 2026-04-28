@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import { colors } from '../theme/colors';
 import LogoIcon from '../components/LogoIcon';
+import DotBackground from '../components/DotBackground';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -20,6 +21,7 @@ export default function LoginScreen({ navigation }) {
   const [remember, setRemember] = useState(false);
 
   return (
+    <DotBackground>
     <SafeAreaView style={styles.safe}>
       <StatusBar barStyle="dark-content" backgroundColor={colors.iceWhite} />
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
@@ -107,11 +109,12 @@ export default function LoginScreen({ navigation }) {
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
+    </DotBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.iceWhite },
+  safe: { flex: 1, backgroundColor: 'transparent' },
   flex: { flex: 1 },
   scroll: {
     flexGrow: 1,
